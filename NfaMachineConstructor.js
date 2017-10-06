@@ -1,7 +1,7 @@
-const NfaManager = require('./NfaManager')
-const ErrorHandler = require('./ErrorHandler')
-const Nfa = require('./Nfa')
-const NfaPair = require('./NfaPair')
+const NfaManager = require('./NfaManager');
+const ErrorHandler = require('./ErrorHandler');
+const Nfa = require('./Nfa');
+const NfaPair = require('./NfaPair');
 
 let NfaMachineConstructor = function (lexer) {
     let nfaManager = null;

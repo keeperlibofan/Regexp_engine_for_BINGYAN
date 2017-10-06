@@ -1,12 +1,16 @@
 const Lexer = require('./Lexer');
 const RegularExpressionHandler = require('./RegularExpressionHandler');
 const MacroHandler = require('./MacroHandler');
+const NfaMachineConstructor = require('./NfaMachineConstructor')
 
 var ThompsonConstruction = function() {
-    var macroHandler = new MacroHandler();
-    var regularExpr = new RegularExpressionHandler('{AD}|\\034', macroHandler);
+    let macroHandler = new MacroHandler();
+
+    let regularExpr = new RegularExpressionHandler('({AD}|\\034)[a-f]*\\:', macroHandler); //测试用例
+
     regularExpr.processRegularExprs(); //处理正则
-    var lexer;
+    let lexer;
+    let nfaMachineConstructor = null;
     this.runLexerExample = function() {
         lexer = new Lexer(regularExpr);
         var exprCount = 0;
@@ -101,6 +105,29 @@ var ThompsonConstruction = function() {
         }
 
         console.log(s);
+    }
+
+    //Nfa自动机构造测试
+    function runNfaMachineConstructorExample() {
+        lexer = new Lexer(regularExpr);
+        nfaMachineConstructor = new NfaMachineConstructor(lexer);
+
+        //nfaMachineConstructor.constructNfaForSingleCharacter(pair);
+        //nfaMachineConstructor.constructNfaForDot(pair);
+        //nfaMachineConstructor.constructNfaForCharacterSetWithoutNegative(pair);
+        //nfaMachineConstructor.constructNfaForCharacterSet(pair);
+        //nfaMachineConstructor.term(pair);
+        //nfaMachineConstructor.constructStarClosure(pair);
+        //nfaMachineConstructor.constructPlusClosure(pair);
+        //nfaMachineConstructor.constructOptionsClosure(pair);
+        //nfaMachineConstructor.factor(pair);
+        //nfaMachineConstructor.cat_expr(pair);
+    }
+
+    this.main = function (){
+        let constructor = new ThompsonConstruction();
+        runNfaMachineConstructorExample();
+
     }
 }
 
