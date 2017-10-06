@@ -40,21 +40,21 @@ let Nfa = function() {
 
 
     this.clearState = function() {
-        this.inputSet.clear()
+        this.inputSet.clear();
         this.next = this.next2 = null;
         anchor = ANCHOR.NONE;
         stateNum = -1;
     };
     //constructor
 
-    this.clearState()
+    this.clearState();
 
     //@params num int
     this.setStateNum = function(num) {
         stateNum = num
     };
 
-    this.getStateNum = function(num) {
+    this.getStateNum = function() {
         return stateNum
     };
 
@@ -73,34 +73,36 @@ let Nfa = function() {
 
         this.inputSet = null;
         this.inputSet = newSet;
-    }
+    };
 
     //@params anchor ANCHOR
     this.setAnchor = function(theAnchor) {
         anchor = theAnchor;
-    }
+    };
 
     this.getAnchor = function() {
         return anchor
-    }
+    };
 
     this.cloneNfa = function(nfa) {
         this.inputSet.clear();
         let _this = this;
         nfa.inputSet.forEach((set) => {
             _this.inputSet.add(set)
-        })
+        });
 
-        anchor = nfa.getAnchor()
+        anchor = nfa.getAnchor();
         this.next = nfa.next;
         this.next2 = nfa.next2;
         edge = nfa.getEdge()
     }
 };
-Nfa.prototype.ANCHOR = {
+Nfa.ANCHOR = {
     NONE: 0,
     START: 1,
     END: 2,
     BOTH: 3
 };
-module.exports = Nfa
+
+Nfa.EPSILON = -1;
+module.exports = Nfa;

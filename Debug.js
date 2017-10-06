@@ -36,6 +36,9 @@
 // a.returnIS();
 // var b = new A()
 // b.inputSet.add('2')
+
+const Nfa = require('./Nfa');
+
 const ThompsonConstruction = require('./ThompsonConstruction')
 var thompsonConstruction = new ThompsonConstruction();
 thompsonConstruction.main()
