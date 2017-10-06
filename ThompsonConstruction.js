@@ -8,7 +8,7 @@ const NfaPrinter = require('./NfaPrinter')
 var ThompsonConstruction = function() {
     let macroHandler = new MacroHandler();
 
-    let regularExpr = new RegularExpressionHandler('({AD}|\\034)[a-f]*\\:', macroHandler); //测试用例
+    let regularExpr = new RegularExpressionHandler('([^a-z])*', macroHandler); //测试用例
 
     let nfaPrinter = new NfaPrinter()
     regularExpr.processRegularExprs(); //处理正则
@@ -116,7 +116,7 @@ var ThompsonConstruction = function() {
         lexer = new Lexer(regularExpr);
         nfaMachineConstructor = new NfaMachineConstructor(lexer);
 
-        nfaMachineConstructor.constructNfaForSingleCharacter(pair);
+        //nfaMachineConstructor.constructNfaForSingleCharacter(pair);
         //nfaMachineConstructor.constructNfaForDot(pair);
         //nfaMachineConstructor.constructNfaForCharacterSetWithoutNegative(pair);
         //nfaMachineConstructor.constructNfaForCharacterSet(pair);
@@ -126,8 +126,9 @@ var ThompsonConstruction = function() {
         //nfaMachineConstructor.constructOptionsClosure(pair);
         //nfaMachineConstructor.factor(pair);
         //nfaMachineConstructor.cat_expr(pair);
+        nfaMachineConstructor.expr(pair);
 
-        nfaPrinter.printNfa(pair.startNode)
+        nfaPrinter.printNfa(pair.startNode);
     }
 
     this.main = function (){
@@ -135,6 +136,6 @@ var ThompsonConstruction = function() {
         runNfaMachineConstructorExample();
 
     }
-}
+};
 
 module.exports = ThompsonConstruction

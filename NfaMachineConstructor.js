@@ -16,7 +16,25 @@ let NfaMachineConstructor = function (lexer) {
     }
 
     //@params pairOut NfaPair
-    this.expr = function(pairOut) {
+    this.factor = factor;
+
+    function factor (pairOut) {
+        term(pairOut);
+
+        let handled = false;
+        handled = constructStarClosure(pairOut)
+        if (!handled) {
+            handled = constructPlusClosure(pairOut);
+        }
+        if (!handled) {
+            handled = constructOptionsClosure(pairOut); //inStack
+        }
+    }
+
+    //@params pairOut NfaPair
+    this.expr = expr;
+
+    function expr (pairOut) {
         /*
     	 * expr 由一个或多个cat_expr 之间进行 OR 形成
     	 * 如果表达式只有一个cat_expr 那么expr 就等价于cat_expr
@@ -26,11 +44,11 @@ let NfaMachineConstructor = function (lexer) {
     	 *         | cat_expr
     	 *
     	 */
-        this.cat_expr();
+        cat_expr(pairOut);
         let localPair = new NfaPair()
         while (lexer.MatchToken(lexer.Token.OR)) {
             lexer.advance();
-            this.cat_expr(localPair);
+            cat_expr(localPair);
 
             //形成 或 结构
             let startNode = nfaManager.newNfa();
@@ -43,9 +61,11 @@ let NfaMachineConstructor = function (lexer) {
             localPair.endNode.next = endNode;
             pairOut.endNode = endNode;
         }
-    }
+    };
     
-    this.cat_expr = function(pairOut) {
+    this.cat_expr = cat_expr;
+
+    function cat_expr(pairOut) {
         /*
     	 * cat_expr -> factor factor .....
     	 * 由于多个factor 前后结合就是一个cat_expr所以
@@ -53,19 +73,19 @@ let NfaMachineConstructor = function (lexer) {
     	 */
 
         if (first_in_cat(lexer.getCurrentToken())) {
-            this.factor(pairOut);
+            factor(pairOut);
         }
         let c = lexer.getLexeme();
 
         while (first_in_cat(lexer.getCurrentToken())) {
             let pairLocal = new NfaPair();
-            this.factor(pairLocal);
+            factor(pairLocal);
 
             pairOut.endNode.next = pairLocal.startNode;
 
             pairOut.endNode = pairLocal.endNode;
         }
-    };
+    }
 
 
 
@@ -74,22 +94,22 @@ let NfaMachineConstructor = function (lexer) {
     function first_in_cat(tok) {
         switch (tok) {
             //正确的表达式不会以 ) $ 开头,如果遇到EOS表示正则表达式解析完毕，那么就不应该执行该函数
-            case lexer.CLOSE_PAREN:
-            case lexer.AT_EOL:
-            case lexer.OR:
-            case lexer.EOS:
+            case lexer.Token.CLOSE_PAREN:
+            case lexer.Token.AT_EOL:
+            case lexer.Token.OR:
+            case lexer.Token.EOS:
                 return false;
-            case lexer.CLOSURE:
-            case lexer.PLUS_CLOSE:
-            case lexer.OPTIONAL:
+            case lexer.Token.CLOSURE:
+            case lexer.Token.PLUS_CLOSE:
+            case lexer.Token.OPTIONAL:
                 //*, +, ? 这几个符号应该放在表达式的末尾
                 ErrorHandler.parseErr('E_CLOSE');
                 return false;
-            case lexer.CCL_END:
+            case lexer.Token.CCL_END:
                 //表达式不应该以]开头
                 ErrorHandler.parseErr('E_BRACKET')
                 return false;
-            case lexer.AT_BOL:
+            case lexer.Token.AT_BOL:
                 //^必须在表达式的最开始
                 ErrorHandler.parseErr('E_BOL');
                 return false;
@@ -98,19 +118,7 @@ let NfaMachineConstructor = function (lexer) {
         return true;
     }
 
-    //@params pairOut NfaPair
-    this.factor = function (pairOut) {
-        this.term(pairOut)
 
-        let handled = false;
-        handled = constructStarClosure(pairOut)
-        if (!handled) {
-            handled = constructPlusClosure(pairOut);
-        }
-        if (!handled) {
-            handled = constructOptionsClosure(pairOut); //inStack
-        }
-    };
 
     function constructOptionsClosure(pairOut) {
         /*
@@ -190,7 +198,8 @@ let NfaMachineConstructor = function (lexer) {
     }
 
     //@params pairOut NfaPair
-    this.term = function (pairOut) {
+    this.term = term;
+    function term (pairOut) {
         /*
          * term ->  character | [...] | [^...] | [character-charcter] | . | (expr)
          * term是解析的最小单位，可以解析括号
@@ -206,13 +215,13 @@ let NfaMachineConstructor = function (lexer) {
             constructNfaForCharacterSet(pairOut);
         }
 
-    };
+    }
 
     //@params pairOut NfaPair
     function constructExprInParen(pairOut) {
         if (lexer.MatchToken(lexer.Token.OPEN_PAREN)) {
             lexer.advance();
-            this.expr(pairOut);
+            expr(pairOut);
             if (lexer.MatchToken(lexer.Token.CLOSE_PAREN)) {
                 lexer.advance()
             } else {

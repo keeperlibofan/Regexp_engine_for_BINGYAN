@@ -31,7 +31,7 @@ var Lexer = function(exprHandler) {
     let sawEsc = false; //是否读取到转义符 /
     let lexeme; //lexeme 是字符的ASCII码
 
-    initTokenMap()
+    initTokenMap();
     this.exprHandler = exprHandler;
 
     function initTokenMap() {
