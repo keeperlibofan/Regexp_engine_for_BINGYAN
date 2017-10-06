@@ -68,6 +68,7 @@ let NfaMachineConstructor = function (lexer) {
     };
 
 
+
     //@retVal boolean
     //@params tok lexer.Token
     function first_in_cat(tok) {
@@ -223,6 +224,7 @@ let NfaMachineConstructor = function (lexer) {
         return false;
     }
 
+    this.constructNfaForSingleCharacter = constructNfaForSingleCharacter
     function constructNfaForSingleCharacter(pairOut) {
         if (!lexer.MatchToken(lexer.Token.L)) {
             return false;

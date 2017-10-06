@@ -25,18 +25,18 @@
 // exprHandler.processRegularExprs()
 // var lexer = new Lexer(exprHandler)
 // lexer.advance()
-function A() {
-    this.inputSet = new Set();
-    this.returnIS = function () {
-        return this.inputSet
-    }
-}
-var a = new A()
-a.inputSet.add('1')
-a.returnIS();
-var b = new A()
-b.inputSet.add('2')
+// function A() {
+//     this.inputSet = new Set();
+//     this.returnIS = function () {
+//         return this.inputSet
+//     }
+// }
+// var a = new A()
+// a.inputSet.add('1')
+// a.returnIS();
+// var b = new A()
+// b.inputSet.add('2')
 const ThompsonConstruction = require('./ThompsonConstruction')
 var thompsonConstruction = new ThompsonConstruction();
-thompsonConstruction.runLexerExample()
+thompsonConstruction.main()
 console.log("Finish")

@@ -6,7 +6,6 @@ let Nfa = function() {
         END: 2,
         BOTH: 3
     };
-    this.ANCHOR = ANCHOR
     this.EPSILON = -1; //边对应的是ε
     this.CCL = -2; //边对应的是字符集
     this.EMPTY = -3; //该节点没有出去的边
@@ -39,8 +38,6 @@ let Nfa = function() {
         return visited
     };
 
-    //constructor
-    this.clearState()
 
     this.clearState = function() {
         this.inputSet.clear()
@@ -48,6 +45,9 @@ let Nfa = function() {
         anchor = ANCHOR.NONE;
         stateNum = -1;
     };
+    //constructor
+
+    this.clearState()
 
     //@params num int
     this.setStateNum = function(num) {
