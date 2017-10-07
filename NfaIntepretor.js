@@ -10,6 +10,88 @@ let NfaIntepretor = function(start, input) {
     }
     let debug = true;
 
+
+    //贪婪模式 Greed
+    //@params inputStr string
+    //@retVal 匹配到了返回 贪婪匹配值 未匹配到返回null
+    function partIntepretNfaG(inputStr, index) {
+        if (typeof inputStr !== 'string' || inputStr.length === 0) {
+            throw new Error('Invalid input string')
+        }
+        let collectCharsCurMax = null; //寄存的当前长度最长匹配的字符串
+        let collectCharsforMore = ""; //找到贪婪匹配更多的字符串
+        let next = new Set();
+
+        next.add(start);
+        next = e_closure(next);
+        let current = new Set();
+        if (next.size === 0 || next === null) {
+            return null;
+        }
+        for (let i = index, c = inputStr[i]; i < inputStr.length; i++, c = inputStr[i]) {
+            current = move(next, c);
+            next = e_closure(current);
+
+            if (current.size === 0) { //如果解析到一半发现所有的状态点都在move后死掉了
+                if (collectCharsCurMax === null) {
+                    return null;
+                }
+                return collectCharsCurMax;
+            }
+            collectCharsforMore += c;
+            if (hasAcceptState(next)) {
+                collectCharsCurMax = collectCharsforMore;
+            }
+        }
+
+        if (collectCharsCurMax !== null) {
+            return collectCharsCurMax;
+        }
+        return null;
+    }
+
+    this.stringController = stringController;
+    //@params inputStr string
+    function stringController(inputStr, ifGreed) {
+        for (let i = 0; i < inputStr.length; i++) {
+
+            let res = ifGreed ? partIntepretNfaG(inputStr, i) : partIntepretNfaUG(inputStr, i);
+
+            if (res !== null) {
+                return res;
+            }
+        }
+        return null;
+    }
+    //非贪婪匹配 UnGreed
+    //@params inputStr string
+    //@params index int 当前匹配的开始点
+    function partIntepretNfaUG(inputStr, index) {
+        if (typeof inputStr !== 'string' || inputStr.length === 0) {
+            throw new Error('Invalid input string')
+        }
+        let collectChars = "";
+        let next = new Set();
+        next.add(start);
+        next = e_closure(next);
+        let current = new Set();
+        if (hasAcceptState(next)) {
+            return collectChars;
+        }
+        for (let i = index, c = inputStr[i]; i < inputStr.length; i++, c = inputStr[i]) {
+            current = move(next, c);
+            next = e_closure(current);
+            if (current.size === 0) {
+                return null;
+            }
+            collectChars += c;
+            if (hasAcceptState(next)) {
+                return collectChars;
+            }
+        }
+
+    }
+
     //@params input Set<Nfa>
     function e_closure (input) {
         /*
@@ -77,6 +159,7 @@ let NfaIntepretor = function(start, input) {
     }
 
     this.move = move;
+    //@retVal Set<Nfa>
     //@params input Set<Nfa>
     function move(input, c) {
         let outSet = new Set();
@@ -103,7 +186,7 @@ let NfaIntepretor = function(start, input) {
         return outSet;
     }
 
-    this.intepretNfa = intepretNfa; //全匹配字符
+    this.intepretNfa = intepretNfa; //全匹配模式
     function intepretNfa(inputStr) {
         if (inputStr.length === 0) {
             throw Error("Invalid input string")

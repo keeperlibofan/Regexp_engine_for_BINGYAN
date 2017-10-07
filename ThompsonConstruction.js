@@ -8,7 +8,7 @@ const NfaIntepretor = require('./NfaIntepretor');
 
 let ThompsonConstruction = function() {
     let macroHandler = new MacroHandler();
-    let inputStr = '(\\d)*';
+    let inputStr = '([a-z])+:/+';
     let regularExpr = new RegularExpressionHandler(inputStr, macroHandler); //测试用例
 
     let nfaPrinter = new NfaPrinter();
@@ -115,10 +115,18 @@ let ThompsonConstruction = function() {
         console.log(s);
     }
 
+
+
     this.runNfaIntepretorExample = runNfaIntepretorExample;
     function runNfaIntepretorExample() {
         nfaIntepretor = new NfaIntepretor(pair.startNode);
         console.log(nfaIntepretor.intepretNfa('AAAA'))
+    }
+
+    //贪婪匹配与非贪婪匹配
+    function runNfaGreedMatchingExample() {
+        nfaIntepretor = new NfaIntepretor(pair.startNode);
+        console.log(nfaIntepretor.stringController('http://net.bingyan.com', true))
     }
 
     //Nfa自动机构造测试
@@ -144,7 +152,8 @@ let ThompsonConstruction = function() {
     this.main = function (){
         let constructor = new ThompsonConstruction();
         runNfaMachineConstructorExample();
-        runNfaIntepretorExample();
+        //runNfaIntepretorExample();
+        runNfaGreedMatchingExample()
     }
 };
 
