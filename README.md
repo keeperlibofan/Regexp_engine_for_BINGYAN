@@ -4,7 +4,7 @@
 
 ***
 ###使用手册
- ThompsonConstruct.js文件为主文件，ThompsonConstruct.main为主函数
+ + ThompsonConstruct.js文件为主文件，ThompsonConstruct.main为主函数
  支持多条字符串同时解析，闭包变量regExprArr为解析后字符串存储的数组
  本正则引擎使用Nfa图构造法，由 3 个部分组成: 词法分析器，Nfa图构造器，Nfa解释器。
  
@@ -16,4 +16,5 @@
  + 5.支持\w(匹配任何单个 "单词" 字符,大写W相反匹配), \d(匹配任意一个数字 (相当于类 [0-9])，大写D相反)
  + 6.支持所有闭包限定符 +,?,*
  + 7.不完全匹配模式下支持贪婪匹配与非贪婪匹配
+ + 8.支持 | (或) 符号
  
