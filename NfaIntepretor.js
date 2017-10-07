@@ -117,13 +117,52 @@ var NfaIntepretor = function(start, input) {
 
         let current = new Set();
         let c = inputStr[charIndex];
-        let partInputStr;
+        let partInputStr = "";
         let lastAccepted = false;
 
         for (charIndex = 0; charIndex < inputStr.length; charIndex++, c = inputStr[charIndex]) {
-            current = move(next, c)
+            current = move(next, c);
+            next = e_closure(current);
 
+            if (next !== null && (next.size > 0)) {
+                if (hasAcceptState(next)) {
+                    lastAccepted = true;
+                }
+            }else {
+                break
+            }
+            partInputStr += c;
         }
+
+        if (lastAccepted) {
+            console.log("The Nfa Machine can recognize string: " + inputStr);
+        } else {
+            console.log("The Nfa Machine can't recognize string and stop at " + partInputStr);
+        }
+    }
+
+    //@params input Set<Nfa>
+    function hasAcceptState(input) {
+        let isAccepted = false;
+        if (input === null || input.size === 0) {
+            return false;
+        }
+
+        let acceptedStatement = "Accept State: ";
+
+        input.forEach((set) => {
+            let p = set;
+            if (p.next === null && p.next2 === null) {
+                isAccepted = true;
+                acceptedStatement += p.getStateNum() + " ";
+            }
+        });
+
+        if (isAccepted) {
+            console.log(acceptedStatement);
+        }
+
+        return isAccepted;
     }
 
 };
