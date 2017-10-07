@@ -1,16 +1,16 @@
-const ErrorHandler = require('./ErrorHandler')
+const ErrorHandler = require('./ErrorHandler');
 
-//@params input String
-var RegularExpressionHandler = function(input, macroHandler) {
+//@params input Input
+let RegularExpressionHandler = function(input, macroHandler) {
     this.input = input; //输入的字符串
-    this.macroHandler = macroHandler
-    var inquoted = false;
-    var charIndex = 0;
-    var regularExprArr = [];
+    this.macroHandler = macroHandler;
+    let inquoted = false;
+    let charIndex = 0;
+    let regularExprArr = [];
 
     this.getRegularExpressionCount = function() {
         return regularExprArr.length;
-    }
+    };
 
     //@params index int
     this.getRegularExpression = function(index) {
@@ -23,7 +23,7 @@ var RegularExpressionHandler = function(input, macroHandler) {
 
     this.processRegularExprs = function() {
         preProcessExpr()
-    }
+    };
 
     function preProcessExpr() {
         /*
@@ -32,10 +32,10 @@ var RegularExpressionHandler = function(input, macroHandler) {
 		 * [0-9]*\.[0-9]
 		 * 注意，宏是可以间套的，所以宏替换时要注意处理间套的情形
 		 */
-        input = input.trim() //去除字符串左右两边的空格或空行
+        input = input.trim(); //去除字符串左右两边的空格或空行
 
-        var regularExpr = "";
-        var c = ii_advance();
+        let regularExpr = "";
+        let c = ii_advance();
         while (c !== " " && c !== '\n' && c !== undefined) {
             if (c === '"') {
                 //判断当前字符是否在双引号里
@@ -43,7 +43,7 @@ var RegularExpressionHandler = function(input, macroHandler) {
             }
 
             if (!inquoted && c === '{') {
-                var name = extracMacroNameFromInput();
+                let name = extracMacroNameFromInput();
                 regularExpr += expandMacro(name)
             } else {
                 regularExpr += c;
@@ -55,20 +55,20 @@ var RegularExpressionHandler = function(input, macroHandler) {
 
     //@params macroName String
     function expandMacro(macroName) {
-        var macroContent = macroHandler.expandMacro(macroName);
-        var begin = macroContent.indexOf('{');
+        let macroContent = macroHandler.expandMacro(macroName);
+        let begin = macroContent.indexOf('{');
         while (begin !== -1) {
-            var end = macroContent.indexOf('}', begin);
+            let end = macroContent.indexOf('}', begin);
             if (end === -1) {
                 ErrorHandler.parseErr("E_BADMAC");
                 return null;
             }
 
-            var inquoted = checkInQuoted(macroContent, begin, end);
+            let inquoted = checkInQuoted(macroContent, begin, end);
 
             if (inquoted === false) {
                 macroName = macroContent.substring(begin + 1, end);
-                var content = macroContent.substring(0, begin);
+                let content = macroContent.substring(0, begin);
                 content += macroHandler.expandMacro(macroName);
                 content += macroContent.substring(end + 1, macroContent.length);
                 macroContent = content;
@@ -96,13 +96,13 @@ var RegularExpressionHandler = function(input, macroHandler) {
 		 * 那么inquoted设置为 true
 		 */
 
-        var inquoted = false;
-        var quoteBegin = macroContent.indexOf('"');
-        var quoteEnd = -1;
+        let inquoted = false;
+        let quoteBegin = macroContent.indexOf('"');
+        let quoteEnd = -1;
 
         while (quoteBegin !== -1) {
 
-            quoteEnd = macroContent.indexOf('"', quoteBegin + 1)
+            quoteEnd = macroContent.indexOf('"', quoteBegin + 1);
             if (quoteEnd === -1) {
                 ErrorHandler.parseErr("E_BADMAC")
             }
@@ -138,8 +138,8 @@ var RegularExpressionHandler = function(input, macroHandler) {
 
 
     function extracMacroNameFromInput() {
-        var name = "";
-        var c = ii_advance()
+        let name = "";
+        let c = ii_advance();
         while (c !== '}' && c !== "\n") {
             name += c;
             c = ii_advance()
@@ -148,13 +148,13 @@ var RegularExpressionHandler = function(input, macroHandler) {
         if (c === '}') {
             return name;
         } else {
-            ErrorHandler.parseErr('E_BADMAC')
+            ErrorHandler.parseErr('E_BADMAC');
             return null;
         }
     }
-}
+};
 
-module.exports = RegularExpressionHandler
+module.exports = RegularExpressionHandler;
 /*
 class RegularExpressionHandler {
     constructor(input, macroHandler) {

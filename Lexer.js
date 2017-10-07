@@ -1,6 +1,6 @@
 
 //@params exprHandler RegularExpressionHandler
-var Lexer = function(exprHandler) {
+let Lexer = function(exprHandler) {
     const Token = {
         EOS: 0, //正则表达式末尾
         ANY: 1,     // . 通配符
@@ -18,7 +18,11 @@ var Lexer = function(exprHandler) {
         OPEN_PAREN: 13, // (
         OPTIONAL: 14,  //?
         OR: 15,       // |
-        PLUS_CLOSE: 16
+        PLUS_CLOSE: 16, //+
+        ANY_CHAR: 17, // \\W
+        REV_ANY_CHAR: 18, // \\W
+        ANY_NUM: 19, // \\d
+        REV_ANY_NUM: 20 // \\D
     };
     this.Token = Token;
     const ASCII_COUNT = 128;
@@ -53,15 +57,19 @@ var Lexer = function(exprHandler) {
         tokenMap.set('?'.charCodeAt(), Token.OPTIONAL);
         tokenMap.set('|'.charCodeAt(), Token.OR);
         tokenMap.set('+'.charCodeAt(), Token.PLUS_CLOSE);
+        tokenMap.set(129, Token.ANY_CHAR); //为 \\w 准备的特殊位置
+        tokenMap.set(130, Token.REV_ANY_CHAR); //为 \\W 准备的特殊位置
+        tokenMap.set(131, Token.ANY_NUM); //为 \\为 \\d 准备的特殊位置
+        tokenMap.set(132, Token.REV_ANY_NUM); //为 \\D 准备的特殊位置
     }
 
     this.getCurrentToken = function() {
         return currentToken
-    }
+    };
     //@params t Token
     this.MatchToken = function(t) {
         return currentToken === t;
-    }
+    };
 
     this.getLexeme = function() {
         return lexeme
@@ -69,7 +77,7 @@ var Lexer = function(exprHandler) {
 
     this.getCurExp = function() {
         return curExpr;
-    }
+    };
 
     this.advance = function() {
         if (currentToken === Token.EOS) {
@@ -108,7 +116,10 @@ var Lexer = function(exprHandler) {
         }
 
         currentToken = (inQuoted || sawEsc) ? Token.L : tokenMap.get(lexeme);
-        return currentToken
+        if (lexeme > 128) {
+            currentToken = tokenMap.get(lexeme);
+        }
+        return currentToken;
     };
 
 
@@ -125,12 +136,13 @@ var Lexer = function(exprHandler) {
     	 * \DDD 3位八进制数
     	 * \xDDD 3位十六进制数
     	 * \^C C是任何字符， 例如^A, ^B 在Ascii 表中都有对应的特殊含义
+    	 * \w匹配所有字符 相当于[a-zA-Z_]
          * 冰岩要求 实现\w
     	 */
 
         let rval = 0;
         let exprToUpper = curExpr.toUpperCase()
-        charIndex++ //越过 \
+        charIndex++; //越过 \
         switch (exprToUpper.charAt(charIndex)) {
             case '\0':
                 rval = '\\';
@@ -156,6 +168,20 @@ var Lexer = function(exprHandler) {
             case 'E':
                 rval = '\033';
                 break;
+            case 'W':
+                if (curExpr[charIndex] === 'w') {
+                    rval = 129;
+                } else {
+                    rval = 130;
+                }
+                break;
+            case 'D':
+                if (curExpr[charIndex] === 'd') {
+                    rval = 131;
+                } else {
+                    rval = 132;
+                }
+                break;
             case '^':
                 charIndex++;
                 /*
@@ -165,7 +191,7 @@ var Lexer = function(exprHandler) {
                  * 具体可参看注释给出的ASCII 图
                  *
                  */
-                rval = curExpr.charAt(charIndex).charCodeAt() - '@'.charCodeAt()
+                rval = curExpr.charAt(charIndex).charCodeAt() - '@'.charCodeAt();
                 break;
             case 'X':
                 /*
@@ -217,9 +243,9 @@ var Lexer = function(exprHandler) {
 
         charIndex++;
         if (typeof rval === 'string') {
-            return rval.charCodeAt()
+            return rval.charCodeAt();
         } else if (typeof  rval === 'number') {
-            return rval
+            return rval;
         }
 
         throw new Error('real value error')
@@ -260,6 +286,6 @@ var Lexer = function(exprHandler) {
         let charCode = c.charCodeAt()
         return (charCode >= 'a'.charCodeAt() && charCode <= 'z'.charCodeAt()) || (charCode >= 'A' && charCode <= 'Z'.charCodeAt());
     }
-}
+};
 
-module.exports = Lexer
+module.exports = Lexer;

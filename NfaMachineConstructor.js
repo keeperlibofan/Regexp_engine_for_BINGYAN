@@ -61,7 +61,7 @@ let NfaMachineConstructor = function (lexer) {
             localPair.endNode.next = endNode;
             pairOut.endNode = endNode;
         }
-    };
+    }
     
     this.cat_expr = cat_expr;
 
@@ -75,8 +75,11 @@ let NfaMachineConstructor = function (lexer) {
         if (first_in_cat(lexer.getCurrentToken())) {
             factor(pairOut);
         }
-        let c = lexer.getLexeme();
 
+        let c = lexer.getLexeme();
+        if (c > 128) {
+            factor(pairOut)
+        }
         while (first_in_cat(lexer.getCurrentToken())) {
             let pairLocal = new NfaPair();
             factor(pairLocal);
@@ -98,6 +101,8 @@ let NfaMachineConstructor = function (lexer) {
             case lexer.Token.AT_EOL:
             case lexer.Token.OR:
             case lexer.Token.EOS:
+            case lexer.Token.ANY_CHAR:
+            case lexer.Token.REV_ANY_CHAR:
                 return false;
             case lexer.Token.CLOSURE:
             case lexer.Token.PLUS_CLOSE:
@@ -201,18 +206,24 @@ let NfaMachineConstructor = function (lexer) {
     this.term = term;
     function term (pairOut) {
         /*
-         * term ->  character | [...] | [^...] | [character-charcter] | . | (expr)
-         * term是解析的最小单位，可以解析括号
+         * term ->  character | [...] | [^...] | [character-charcter] | . | (expr) | \\w
+         * term是解析的最小单位，可以解析括号，还可以解析\\w
          */
-        let handled = constructExprInParen(pairOut)
+        let handled = constructExprInParen(pairOut);
         if (!handled) {
-            handled = constructNfaForSingleCharacter(pairOut)
+            handled = constructNfaForSingleCharacter(pairOut);
         }
         if (!handled) {
             handled = constructNfaForDot(pairOut);
         }
         if (!handled) {
             constructNfaForCharacterSet(pairOut);
+        }
+        if (!handled) {
+            constructNfaForANY_CHAR(pairOut);
+        }
+        if (!handled) {
+            constructNfaForANY_NUM(pairOut);
         }
 
     }
@@ -284,6 +295,63 @@ let NfaMachineConstructor = function (lexer) {
         return true;
     }
 
+    function constructNfaForANY_NUM(pairOut) {
+        if (!lexer.MatchToken(lexer.Token.ANY_NUM) && !lexer.MatchToken(lexer.Token.REV_ANY_NUM)) {
+            return false;
+        }
+
+        let start = null;
+        start = pairOut.startNode = nfaManager.newNfa();
+        pairOut.endNode = pairOut.startNode.next = nfaManager.newNfa()
+
+        start.setEdge(toolNfa.CCL);
+        //把所有的数字添加到Nfa节点中来
+        for (let i = '0'.charCodeAt(); i <= "9".charCodeAt(); i++) {
+            start.addToSet(i);
+        }
+        if (lexer.MatchToken(lexer.Token.REV_ANY_NUM)) {
+            start.setComplement();
+        }
+
+        lexer.advance();
+
+        return true;
+    }
+
+    function constructNfaForANY_CHAR(pairOut) {
+        if (!lexer.MatchToken(lexer.Token.ANY_CHAR) && !lexer.MatchToken(lexer.Token.REV_ANY_CHAR)) {
+            return false;
+        }
+
+        let start = null;
+        start = pairOut.startNode = nfaManager.newNfa();
+        pairOut.endNode = pairOut.startNode.next = nfaManager.newNfa();
+
+        start.setEdge(toolNfa.CCL);
+        //先把所有的小写字母全部添加进入
+        for (let i = 'a'.charCodeAt(); i <= 'z'.charCodeAt(); i++) {
+            start.addToSet(i);
+        }
+        //然后把大写字符添加进入
+        for (let i = "A".charCodeAt(); i <= 'Z'.charCodeAt(); i++) {
+            start.addToSet(i);
+        }
+        //最后把所有的数字添加进入
+        for (let i = '0'.charCodeAt(); i <= "9".charCodeAt(); i++) {
+            start.addToSet(i);
+        }
+
+        start.addToSet('_'.charCodeAt());
+
+        if (lexer.MatchToken(lexer.Token.REV_ANY_CHAR)) {
+            start.setComplement();
+        }
+
+        lexer.advance();
+
+        return true;
+    }
+
     //@params pairOut NfaPair
     function constructNfaForDot(pairOut) {
         if (!lexer.MatchToken(lexer.Token.ANY)) {
@@ -325,9 +393,6 @@ let NfaMachineConstructor = function (lexer) {
         }
 
     }
-
 };
 
-
-
-module.exports = NfaMachineConstructor
+module.exports = NfaMachineConstructor;

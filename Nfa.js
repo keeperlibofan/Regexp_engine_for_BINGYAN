@@ -24,11 +24,11 @@ let Nfa = function() {
 
 
     this.inputSet = new Set(); //用来存储字符集类
-    this.next = null; //跳转的下一个状态，可以是空
-    this.next2 = null; //跳转的另一个状态，当状态含有两条ε边时，这个指针才有效
-    let anchor; //对应的正则表达式是否开头含有^, 或结尾含有$,  或两种情况都有
-    let stateNum; //节点编号
-    let visited = false; //节点是否被访问过，用于节点打印
+    this.next = null;   //跳转的下一个状态，可以是空
+    this.next2 = null;  //跳转的另一个状态，当状态含有两条ε边时，这个指针才有效
+    let anchor;         //对应的正则表达式是否开头含有^, 或结尾含有$,  或两种情况都有
+    let stateNum;       //节点编号
+    let visited = false;       //节点是否被访问过，用于节点打印
 
     this.setVisited = function() {
         visited = true
@@ -106,4 +106,5 @@ Nfa.ANCHOR = {
 
 Nfa.EPSILON = -1;
 Nfa.CCL = -2;
+Nfa.EMPTY = -3;
 module.exports = Nfa;

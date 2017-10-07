@@ -1,12 +1,13 @@
-const Nfa = require('./Nfa')
+const Nfa = require('./Nfa');
 
 //@params start Nfa 起始节点
-//@params input
-var NfaIntepretor = function(start, input) {
+//@params input 输入系统
+let NfaIntepretor = function(start, input) {
     //constructor
     this.start = start;
-    this.input = input;
-
+    if (input !== undefined) {
+        this.input = input;
+    }
     let debug = true;
 
     //@params input Set<Nfa>
@@ -65,8 +66,8 @@ var NfaIntepretor = function(start, input) {
         let s = "";
         let index = 1;
         let size = input.size;
-        input.forEach((set) => {
-            s += set.next().getStateNum();
+        input.forEach((set) => { //set是一个nfa对象
+            s += set.getStateNum();
             if (index < size) {
                 s += ',';
             }
@@ -134,11 +135,14 @@ var NfaIntepretor = function(start, input) {
             partInputStr += c;
         }
 
-        if (lastAccepted) {
-            console.log("The Nfa Machine can recognize string: " + inputStr);
-        } else {
-            console.log("The Nfa Machine can't recognize string and stop at " + partInputStr);
-        }
+        // if (lastAccepted) {
+        //     console.log("The Nfa Machine can recognize string: " + inputStr);
+        // } else {
+        //     console.log("The Nfa Machine can't recognize string and stop at " + partInputStr);
+        // }
+
+        //如果匹配到最后一个字符则匹配成功，否则匹配失败
+        return charIndex === inputStr.length
     }
 
     //@params input Set<Nfa>

@@ -23,7 +23,7 @@ var MacroHandler = function() {
             return "(" + this.macroMap.get(macroName) + ")";
         }
         return "ERROR" //走到这里就是bug
-    }
+    };
 
     //未完成函数
     this.printMacs = function() {

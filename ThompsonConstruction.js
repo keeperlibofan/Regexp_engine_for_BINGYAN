@@ -1,16 +1,18 @@
 const Lexer = require('./Lexer');
 const RegularExpressionHandler = require('./RegularExpressionHandler');
 const MacroHandler = require('./MacroHandler');
-const NfaMachineConstructor = require('./NfaMachineConstructor')
+const NfaMachineConstructor = require('./NfaMachineConstructor');
 const NfaPair = require("./NfaPair");
-const NfaPrinter = require('./NfaPrinter')
+const NfaPrinter = require('./NfaPrinter');
+const NfaIntepretor = require('./NfaIntepretor');
 
-var ThompsonConstruction = function() {
+let ThompsonConstruction = function() {
     let macroHandler = new MacroHandler();
+    let inputStr = '(\\d)*';
+    let regularExpr = new RegularExpressionHandler(inputStr, macroHandler); //测试用例
 
-    let regularExpr = new RegularExpressionHandler('([^a-z])*', macroHandler); //测试用例
-
-    let nfaPrinter = new NfaPrinter()
+    let nfaPrinter = new NfaPrinter();
+    let nfaIntepretor = null;
     regularExpr.processRegularExprs(); //处理正则
     let lexer;
     let pair = new NfaPair();
@@ -33,7 +35,9 @@ var ThompsonConstruction = function() {
             }
 
         }
-    }
+    };
+
+
 
     function printLexResult() {
         while (!lexer.MatchToken(lexer.Token.EOS)) {
@@ -51,7 +55,7 @@ var ThompsonConstruction = function() {
         }
     }
     function printMetaCharMeaning() {
-        var s = "";
+        let s = "";
         if (lexer.MatchToken(lexer.Token.ANY)) {
             s = "当前字符是点通配符";
         }
@@ -111,6 +115,12 @@ var ThompsonConstruction = function() {
         console.log(s);
     }
 
+    this.runNfaIntepretorExample = runNfaIntepretorExample;
+    function runNfaIntepretorExample() {
+        nfaIntepretor = new NfaIntepretor(pair.startNode);
+        console.log(nfaIntepretor.intepretNfa('AAAA'))
+    }
+
     //Nfa自动机构造测试
     function runNfaMachineConstructorExample() {
         lexer = new Lexer(regularExpr);
@@ -134,8 +144,8 @@ var ThompsonConstruction = function() {
     this.main = function (){
         let constructor = new ThompsonConstruction();
         runNfaMachineConstructorExample();
-
+        runNfaIntepretorExample();
     }
 };
 
-module.exports = ThompsonConstruction
+module.exports = ThompsonConstruction;
