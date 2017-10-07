@@ -12,8 +12,10 @@ var MacroHandler = function() {
 
     function newMacro(macroMap) {
         macroMap.set("D", "[0-9]");
-        macroMap.set("A", "[a-z]");
+        macroMap.set("a", "[a-z]");
+        macroMap.set("A", "[A-Z]");
         macroMap.set("AD", "{A}|{D}");
+        macroMap.set("aD", "{a}|{D}")
     }
 
     this.expandMacro = function(macroName) {
