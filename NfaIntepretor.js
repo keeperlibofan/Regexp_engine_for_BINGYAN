@@ -1,5 +1,7 @@
 const Nfa = require('./Nfa')
 
+//@params start Nfa 起始节点
+//@params input
 var NfaIntepretor = function(start, input) {
     //constructor
     this.start = start;
@@ -69,8 +71,59 @@ var NfaIntepretor = function(start, input) {
                 s += ',';
             }
             index++;
-        })
+        });
         return s;
+    }
+
+    this.move = move;
+    //@params input Set<Nfa>
+    function move(input, c) {
+        let outSet = new Set();
+
+        input.forEach((set) => {
+            let p = set;
+
+            let s = p.inputSet;
+            let cb = c.charCodeAt();
+
+            if (p.getEdge() === cb || (p.getEdge() === Nfa.CCL && p.inputSet.has(cb))) {
+
+                outSet.add(p.next);
+            }
+        });
+        let res = "";
+
+        if (outSet !== null && debug) {
+            res += ("move({ " + strFromNfaSet(input) + " }, '" + c + "')= ");
+            res += ("{ " + strFromNfaSet(outSet) + " }");
+            console.log(res);
+        }
+
+        return outSet;
+    }
+
+    this.intepretNfa = intepretNfa; //全匹配字符
+    function intepretNfa(inputStr) {
+        if (inputStr.length === 0) {
+            throw Error("Invalid input string")
+        }
+
+        //读入要解读的inputStr
+        let charIndex = 0;
+
+        let next = new Set();
+        next.add(start);
+        next = e_closure(next);
+
+        let current = new Set();
+        let c = inputStr[charIndex];
+        let partInputStr;
+        let lastAccepted = false;
+
+        for (charIndex = 0; charIndex < inputStr.length; charIndex++, c = inputStr[charIndex]) {
+            current = move(next, c)
+
+        }
     }
 
 };

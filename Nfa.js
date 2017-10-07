@@ -105,4 +105,5 @@ Nfa.ANCHOR = {
 };
 
 Nfa.EPSILON = -1;
+Nfa.CCL = -2;
 module.exports = Nfa;
