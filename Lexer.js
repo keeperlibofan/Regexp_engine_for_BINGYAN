@@ -141,7 +141,7 @@ let Lexer = function(exprHandler) {
     	 */
 
         let rval = 0;
-        let exprToUpper = curExpr.toUpperCase()
+        let exprToUpper = curExpr.toUpperCase();
         charIndex++; //越过 \
         switch (exprToUpper.charAt(charIndex)) {
             case '\0':

@@ -1,12 +1,13 @@
 const ErrorHandler = require('./ErrorHandler');
 
-//@params input Input
+//@params input String
 let RegularExpressionHandler = function(input, macroHandler) {
     this.input = input; //输入的字符串
     this.macroHandler = macroHandler;
     let inquoted = false;
     let charIndex = 0;
     let regularExprArr = [];
+
 
     this.getRegularExpressionCount = function() {
         return regularExprArr.length;
@@ -24,6 +25,8 @@ let RegularExpressionHandler = function(input, macroHandler) {
     this.processRegularExprs = function() {
         preProcessExpr()
     };
+
+
 
     function preProcessExpr() {
         /*
