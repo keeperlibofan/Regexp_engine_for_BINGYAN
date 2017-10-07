@@ -26,7 +26,9 @@ let RegularExpressionHandler = function(input, macroHandler) {
         preProcessExpr()
     };
 
-
+    this.importRawRegularExprs = function(regexpr) {
+        regularExprArr.push(regexpr)
+    };
 
     function preProcessExpr() {
         /*

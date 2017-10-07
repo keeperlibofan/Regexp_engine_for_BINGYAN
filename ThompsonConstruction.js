@@ -20,7 +20,14 @@ let ThompsonConstruction = function() {
     let lexer;
     let pair = new NfaPair();
     let nfaMachineConstructor = null;
-    this.runLexerExample = function() {
+
+    this.runLexerExample = runLexerExample;
+
+    function runLexerExample () {
+        //为了测试词法构造器，在这里我们不得不取消宏处理，因此重新new了一个处理器
+        let regularExpr = new RegularExpressionHandler();
+        regularExpr.importRawRegularExprs('0{2}');
+
         lexer = new Lexer(regularExpr);
         var exprCount = 0;
         console.log("当前正则解析的正则表达式: " + regularExpr.getRegularExpression(exprCount));
@@ -222,6 +229,10 @@ let ThompsonConstruction = function() {
     }
     function printMetaCharMeaning() {
         let s = "";
+        if (lexer.MatchToken(lexer.Token.QUA)) {
+            s = "当前匹配到了限定符{}"
+        }
+
         if (lexer.MatchToken(lexer.Token.ANY)) {
             s = "当前字符是点通配符";
         }
@@ -317,6 +328,7 @@ let ThompsonConstruction = function() {
 
     this.main = function (){
         let constructor = new ThompsonConstruction();
+        runLexerExample()
         runNfaMachineConstructorExample();
         //runNfaIntepretorExample();
         runNfaGreedMatchingExample()

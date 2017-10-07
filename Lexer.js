@@ -22,7 +22,8 @@ let Lexer = function(exprHandler) {
         ANY_CHAR: 17, // \\W
         REV_ANY_CHAR: 18, // \\W
         ANY_NUM: 19, // \\d
-        REV_ANY_NUM: 20 // \\D
+        REV_ANY_NUM: 20, // \\D
+        QUA: 21 // {} 限定符号
     };
     this.Token = Token;
     const ASCII_COUNT = 128;
@@ -34,6 +35,8 @@ let Lexer = function(exprHandler) {
     let inQuoted = false; //是否在双引号内部
     let sawEsc = false; //是否读取到转义符 /
     let lexeme; //lexeme 是字符的ASCII码
+    let min = null; //这是词法分析器解析的第一个数字
+    let max = null; //这是词法分析器解析的第二个数字 初始值为null
 
     initTokenMap();
     this.exprHandler = exprHandler;
@@ -61,6 +64,7 @@ let Lexer = function(exprHandler) {
         tokenMap.set(130, Token.REV_ANY_CHAR); //为 \\W 准备的特殊位置
         tokenMap.set(131, Token.ANY_NUM); //为 \\为 \\d 准备的特殊位置
         tokenMap.set(132, Token.REV_ANY_NUM); //为 \\D 准备的特殊位置
+        tokenMap.set(133, Token.QUA); //为 {} 准备的特殊位置
     }
 
     this.getCurrentToken = function() {
@@ -77,6 +81,14 @@ let Lexer = function(exprHandler) {
 
     this.getCurExp = function() {
         return curExpr;
+    };
+
+    this.getMin = function () {
+        return min;
+    };
+
+    this.getMax = function () {
+        return max;
     };
 
     this.advance = function() {
@@ -103,13 +115,25 @@ let Lexer = function(exprHandler) {
             charIndex++
         }
 
+
         sawEsc = (curExpr.charAt(charIndex) === '\\');
-        if (sawEsc && curExpr.charAt(charIndex + 1)!== '"' &&!inQuoted) {
-            lexeme = handleEsc()
+        if (sawEsc && curExpr.charAt(charIndex + 1) !== '"' && !inQuoted) {
+            lexeme = handleEsc();
 
         } else if (sawEsc && curExpr.charAt(charIndex + 1) === '"') {
             charIndex += 2;
             lexeme = '"'.charCodeAt();
+        } else if (!sawEsc && (curExpr.charAt(charIndex) === "{") && !inQuoted) {
+            let subStr = "";
+            while (curExpr.charAt(charIndex) !== '}') {
+                charIndex++;
+                subStr += curExpr.charAt(charIndex);
+            }
+            let array = subStr.split(',');
+            min = parseInt(array[0]);
+            max = parseInt(array[1]);
+            lexeme = 133; //为 {} 准备的限定符
+            charIndex++
         } else {
             lexeme = curExpr.charAt(charIndex).charCodeAt();
             charIndex++;
