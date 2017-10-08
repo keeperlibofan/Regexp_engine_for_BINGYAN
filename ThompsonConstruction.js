@@ -5,10 +5,18 @@ const NfaMachineConstructor = require('./NfaMachineConstructor');
 const NfaPair = require("./NfaPair");
 const NfaPrinter = require('./NfaPrinter');
 const NfaIntepretor = require('./NfaIntepretor');
+const Nfa = require('./Nfa');
 
 //@params inputStr RegExpr为需要被解析的正则表达式
 let ThompsonConstruction = function(inputStr) {
     let macroHandler = new MacroHandler();
+    //anchor处理
+    let STA_ANCHOR = false;
+
+    if (inputStr[0] === "^") {
+        STA_ANCHOR = true;
+        inputStr = inputStr.substring(1);
+    }
 
     //进行{n} , {n,m} 替换
     inputStr = prePreProcessExpr(inputStr);
@@ -22,6 +30,8 @@ let ThompsonConstruction = function(inputStr) {
     let pair = new NfaPair();
     let nfaMachineConstructor = null;
 
+
+
     this.runLexerExample = runLexerExample;
 
     //@params importRawExpr string 需要导入的原生表达式
@@ -31,7 +41,7 @@ let ThompsonConstruction = function(inputStr) {
         regularExpr.importRawRegularExprs(importRawExpr);
 
         lexer = new Lexer(regularExpr);
-        var exprCount = 0;
+        let exprCount = 0;
         console.log("当前正则解析的正则表达式: " + regularExpr.getRegularExpression(exprCount));
         lexer.advance();
         while (!lexer.MatchToken(lexer.Token.END_OF_INPUT)) {
@@ -93,10 +103,24 @@ let ThompsonConstruction = function(inputStr) {
         let startPlace = charIndex;
         let begin = inputStr.indexOf('\\');
         let end;
+        let ccl_set = new Set(['.','{','}','|','^','$','*','?','+','[',']','(',')']);
         while (begin !== -1) {
             regExpr = "";
-            if (isAlpha(inputStr[begin + 1])) {
+            if (isAlpha(inputStr[begin + 1]) || ccl_set.has(inputStr[begin + 1])) {
                 switch (inputStr[begin + 1].toUpperCase()) {
+                    case '.':
+                    case '{':
+                    case '}':
+                    case '|':
+                    case '^':
+                    case '$':
+                    case '*':
+                    case '?':
+                    case '+':
+                    case '[':
+                    case ']':
+                    case '(':
+                    case ')':
                     case 'W':
                     case 'B':
                     case 'F':
@@ -148,7 +172,6 @@ let ThompsonConstruction = function(inputStr) {
                         }
                         break;
                     case 'X':
-                    case '0':
 
                     default :
                         begin = inputStr.indexOf('\\', begin + 1);
@@ -314,6 +337,9 @@ let ThompsonConstruction = function(inputStr) {
         if (typeof ifGreed !== 'boolean') {
             throw new Error()
         }
+        if (STA_ANCHOR) {
+            matchingStr = '\n' + matchingStr;
+        }
         nfaIntepretor = new NfaIntepretor(pair.startNode);
         console.log(nfaIntepretor.stringController(matchingStr, ifGreed))
     }
@@ -337,6 +363,15 @@ let ThompsonConstruction = function(inputStr) {
         //nfaMachineConstructor.cat_expr(pair);
         nfaMachineConstructor.expr(pair);
 
+        if (STA_ANCHOR) {
+            let startNode = new Nfa();
+            let temp;
+            startNode.setStateNum(513);
+            startNode.setEdge('\n'.charCodeAt());
+            temp = pair.startNode;
+            pair.startNode = startNode;
+            startNode.next = temp;
+        }
         nfaPrinter.printNfa(pair.startNode);
     }
 

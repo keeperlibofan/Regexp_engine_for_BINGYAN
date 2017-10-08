@@ -184,13 +184,13 @@ let Lexer = function(exprHandler) {
                 rval = '\r';
                 break;
             case 'S':
-                rval = '\s';
+                rval = ' ';
                 break;
             case 'T':
                 rval = '\t';
                 break;
             case 'E':
-                rval = '\033';
+                rval = '\033'; //ESC
                 break;
             case 'W':
                 if (curExpr[charIndex] === 'w') {

@@ -1,8 +1,8 @@
 const ThompsonConstruction = require('./ThompsonConstruction');
 
-var thompsonConstruction = new ThompsonConstruction('(.)?');
+let thompsonConstruction = new ThompsonConstruction('^[a-z]+:/[9]/[a-zA-Z]+');
 thompsonConstruction.runNfaMachineConstructorExample(); //根剧解析后的正则来构造Nfa图像
-thompsonConstruction.runNfaGreedMatchingExample('http://net.bing123yan123.com', true);
+thompsonConstruction.runNfaGreedMatchingExample('http://net.bingyan.com', true);
 console.log("Finish");
 
 // const MacroHandler = require('./MacroHandler')

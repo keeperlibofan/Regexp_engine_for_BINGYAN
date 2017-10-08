@@ -1,4 +1,4 @@
-var NfaPrinter = function() {
+let NfaPrinter = function() {
     const ASCII_NUM = 128;
     let start = true;
 
@@ -33,13 +33,13 @@ var NfaPrinter = function() {
 
         printNfaNode(startNfa);
 
-        let res = ""
+        let res = "";
         if (start) {
             res += "  (START STATE)";
             start = false;
         }
 
-        console.log(res)
+        console.log(res);
 
         //递归到子节点
         this.printNfa(startNfa.next);
@@ -73,7 +73,7 @@ var NfaPrinter = function() {
             console.log(res)
         }
     }
-}
+};
 
 
 module.exports = NfaPrinter;

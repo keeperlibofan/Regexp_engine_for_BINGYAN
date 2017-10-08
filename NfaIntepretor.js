@@ -252,6 +252,10 @@ let NfaIntepretor = function(start, input) {
         return isAccepted;
     }
 
+    //克隆一份NfaPair
+    function NfaPairCloner(startNode) {
+
+    }
 };
 
 module.exports = NfaIntepretor;

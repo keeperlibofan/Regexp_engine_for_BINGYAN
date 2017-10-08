@@ -1,8 +1,8 @@
-const Nfa = require('./Nfa')
-const ErrorHandler = require('./ErrorHandler')
+const Nfa = require('./Nfa');
+const ErrorHandler = require('./ErrorHandler');
 
 let NfaManager = function() {
-    const NFA_MAX = 256;
+    const NFA_MAX = 512;
     let nfaStatesArr = null;
     let nfaStack = null;
     let nextAlloc = 0; //nfa数组下标
@@ -40,7 +40,7 @@ let NfaManager = function() {
         nfa.setEdge(nfa.EPSILON);
 
         return nfa;
-    }
+    };
 
     //@params nfaDiscarded Nfa
     this.discardNfa = function(nfaDiscarded) {
