@@ -1,3 +1,10 @@
+const ThompsonConstruction = require('./ThompsonConstruction');
+
+var thompsonConstruction = new ThompsonConstruction('(.)?');
+thompsonConstruction.runNfaMachineConstructorExample(); //根剧解析后的正则来构造Nfa图像
+thompsonConstruction.runNfaGreedMatchingExample('http://net.bing123yan123.com', true);
+console.log("Finish");
+
 // const MacroHandler = require('./MacroHandler')
 // const ErrorHandler = require('./ErrorHandler')
 
@@ -203,8 +210,3 @@
 
 // let b = multiQulifier2Regexpr("a", '1', '10');
 // let a = prePreProcessExpr('(o{10,}|\\w{3})');
-
-const ThompsonConstruction = require('./ThompsonConstruction')
-var thompsonConstruction = new ThompsonConstruction();
-thompsonConstruction.main();
-console.log("Finish");

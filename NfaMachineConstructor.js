@@ -19,16 +19,22 @@ let NfaMachineConstructor = function (lexer) {
     this.factor = factor;
 
     function factor (pairOut) {
+
         term(pairOut);
 
         let handled = false;
-        handled = constructStarClosure(pairOut)
+
+        handled = constructStarClosure(pairOut);
         if (!handled) {
             handled = constructPlusClosure(pairOut);
         }
         if (!handled) {
-            handled = constructOptionsClosure(pairOut); //inStack
+            handled = constructOptionsClosure(pairOut);
         }
+        if (!handled) {
+            handled = constructQualifierClosure(pairOut); //inStack
+        }
+
     }
 
     //@params pairOut NfaPair
@@ -124,6 +130,23 @@ let NfaMachineConstructor = function (lexer) {
     }
 
 
+    function constructQualifierClosure(pairOut) {
+        /*
+         * term{n,m} | {n,} | {n}
+         */
+        let start, end;
+        if (!lexer.MatchToken(lexer.Token.QUA)) {
+            return false;
+        }
+
+        start = nfaManager.newNfa();
+        end = nfaManager.newNfa();
+
+        let min = lexer.getMin();
+        let max = lexer.getMax();
+
+
+    }
 
     function constructOptionsClosure(pairOut) {
         /*

@@ -6,9 +6,10 @@ const NfaPair = require("./NfaPair");
 const NfaPrinter = require('./NfaPrinter');
 const NfaIntepretor = require('./NfaIntepretor');
 
-let ThompsonConstruction = function() {
+//@params inputStr RegExpr为需要被解析的正则表达式
+let ThompsonConstruction = function(inputStr) {
     let macroHandler = new MacroHandler();
-    let inputStr = '0{2}';
+
     //进行{n} , {n,m} 替换
     inputStr = prePreProcessExpr(inputStr);
 
@@ -23,10 +24,11 @@ let ThompsonConstruction = function() {
 
     this.runLexerExample = runLexerExample;
 
-    function runLexerExample () {
+    //@params importRawExpr string 需要导入的原生表达式
+    function runLexerExample (importRawExpr) {
         //为了测试词法构造器，在这里我们不得不取消宏处理，因此重新new了一个处理器
         let regularExpr = new RegularExpressionHandler();
-        regularExpr.importRawRegularExprs('0{2}');
+        regularExpr.importRawRegularExprs(importRawExpr);
 
         lexer = new Lexer(regularExpr);
         var exprCount = 0;
@@ -45,7 +47,7 @@ let ThompsonConstruction = function() {
             }
 
         }
-    };
+    }
 
     //----------------------限定函数处理模块 {m,n} | {m} | {m,}-----------------------
     //处理x{n,m}
@@ -153,6 +155,9 @@ let ThompsonConstruction = function() {
                         break;
                 }
             }
+            else {
+                begin = inputStr.indexOf('\\', begin + 1)
+            }
         }
 
         //第二部分
@@ -227,6 +232,7 @@ let ThompsonConstruction = function() {
             lexer.advance();
         }
     }
+
     function printMetaCharMeaning() {
         let s = "";
         if (lexer.MatchToken(lexer.Token.QUA)) {
@@ -300,12 +306,20 @@ let ThompsonConstruction = function() {
         console.log(nfaIntepretor.intepretNfa('AAAA'))
     }
 
+    this.runNfaGreedMatchingExample = runNfaGreedMatchingExample;
+
     //贪婪匹配与非贪婪匹配
-    function runNfaGreedMatchingExample() {
+    //需要匹配的字符串
+    function runNfaGreedMatchingExample(matchingStr, ifGreed) {
+        if (typeof ifGreed !== 'boolean') {
+            throw new Error()
+        }
         nfaIntepretor = new NfaIntepretor(pair.startNode);
-        console.log(nfaIntepretor.stringController('http://net.bingyan.com', true))
+        console.log(nfaIntepretor.stringController(matchingStr, ifGreed))
     }
 
+
+    this.runNfaMachineConstructorExample = runNfaMachineConstructorExample
     //Nfa自动机构造测试
     function runNfaMachineConstructorExample() {
         lexer = new Lexer(regularExpr);
@@ -327,11 +341,11 @@ let ThompsonConstruction = function() {
     }
 
     this.main = function (){
-        let constructor = new ThompsonConstruction();
-        runLexerExample()
+        let constructor = new ThompsonConstruction('0{2，4}0');
+        runLexerExample('0{2,4}0');
         runNfaMachineConstructorExample();
         //runNfaIntepretorExample();
-        runNfaGreedMatchingExample()
+        runNfaGreedMatchingExample();
     }
 };
 
