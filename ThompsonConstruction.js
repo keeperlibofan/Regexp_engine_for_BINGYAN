@@ -12,12 +12,16 @@ let ThompsonConstruction = function(inputStr) {
     let macroHandler = new MacroHandler();
     //anchor处理
     let STA_ANCHOR = false;
-
+    let END_ANCHOR = false;
     if (inputStr[0] === "^") {
         STA_ANCHOR = true;
         inputStr = inputStr.substring(1);
     }
 
+    if (inputStr[inputStr.length - 1] === '$') {
+        END_ANCHOR = true;
+        inputStr = inputStr.substring(0,inputStr.length - 1)
+    }
     //进行{n} , {n,m} 替换
     inputStr = prePreProcessExpr(inputStr);
 
@@ -324,9 +328,9 @@ let ThompsonConstruction = function(inputStr) {
 
 
     this.runNfaIntepretorExample = runNfaIntepretorExample;
-    function runNfaIntepretorExample() {
+    function runNfaIntepretorExample(inputStr) {
         nfaIntepretor = new NfaIntepretor(pair.startNode);
-        console.log(nfaIntepretor.intepretNfa('AAAA'))
+        console.log(nfaIntepretor.intepretNfa(inputStr))
     }
 
     this.runNfaGreedMatchingExample = runNfaGreedMatchingExample;
