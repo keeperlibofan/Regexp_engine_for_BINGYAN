@@ -125,12 +125,11 @@ let NfaMachineConstructor = function (lexer) {
                 //^必须在表达式的最开始
                 ErrorHandler.parseErr('E_BOL');
                 return false;
-
         }
         return true;
     }
 
-
+    //构造处理{}限定符的结构
     function constructQualifierClosure(pairOut) {
         /*
          * term{n,m} | {n,} | {n}
