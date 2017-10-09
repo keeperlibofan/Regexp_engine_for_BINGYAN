@@ -51,7 +51,7 @@ let NfaMachineConstructor = function (lexer) {
     	 *
     	 */
         cat_expr(pairOut);
-        let localPair = new NfaPair()
+        let localPair = new NfaPair();
         while (lexer.MatchToken(lexer.Token.OR)) {
             lexer.advance();
             cat_expr(localPair);
@@ -113,12 +113,13 @@ let NfaMachineConstructor = function (lexer) {
             case lexer.Token.CLOSURE:
             case lexer.Token.PLUS_CLOSE:
             case lexer.Token.OPTIONAL:
-                //*, +, ? 这几个符号应该放在表达式的末尾
+            case lexer.Token.QUA:
+                //*, +, ? ,{n,m}, {n,}, {n}这几个符号应该放在表达式的末尾
                 ErrorHandler.parseErr('E_CLOSE');
                 return false;
             case lexer.Token.CCL_END:
                 //表达式不应该以]开头
-                ErrorHandler.parseErr('E_BRACKET')
+                ErrorHandler.parseErr('E_BRACKET');
                 return false;
             case lexer.Token.AT_BOL:
                 //^必须在表达式的最开始
