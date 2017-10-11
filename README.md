@@ -1,9 +1,9 @@
 # Regexp_engine_for_BINGYAN
 
-##Javascript version
+## Javascript version
 
 ***
-###使用手册
+### 使用手册
  + ThompsonConstruct.js文件为主文件，支持多条字符串同时解析，
  闭包变量regExprArr为解析后字符串存储的数组
  本正则引擎使用Nfa图构造法，由 3 个部分组成: 词法分析器，Nfa图构造器，Nfa解释器。
@@ -40,7 +40,7 @@
  
 ```
 
-###具体实现功能
+### 具体实现功能
  + 1.支持圆括号嵌套 eg: '((expr1)|(expr2))'
  + 2.支持宏替换预处理 eg: '{A}' => ([A-Z])
  + 3.支持[...]解析，同时支持[^...]解析 eg: '[a-zA-Z0-9_]'
@@ -53,5 +53,7 @@
  + 9.支持 使用八进制或者十六进制表示单个字符 eg： '\\X033' => '3'
  + 10.支持 使用{n}, {n,} ,{n,m} 限定符，这个功能实现仍然有待完善
  + 11.支持 anchor ^
- ###学习日记
- + 简书：http://www.jianshu.com/p/7129c41af11b
+ 
+ ### 学习日记
+ 
+ > 简书：http://www.jianshu.com/p/7129c41af11b
